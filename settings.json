@@ -1,0 +1,8 @@
+{
+  "context": "paragraph",
+  "emphasis": "highlight",
+  "combined": false,
+  "include_underline": false,
+  "expand_partial_words": false,
+  "output_folder_name": "Highlights Export"
+}
