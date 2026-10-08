@@ -46,9 +46,30 @@ def detect_printed(doc, furniture_text_by_page):
     if len(cands) < 3 or len(cands) < 0.5 * n:
         return out
 
-    # Printed page numbers only ever increase, and by at least as much as the PDF page position
-    # (pages can be omitted from an excerpt). Find the longest such chain, one number per page.
+    # Within one section, printed page numbers only ever increase, and by at least as much as the
+    # PDF page position (pages can be omitted from an excerpt). A court opinion or a collection can
+    # contain several such sections, each restarting its numbering, so find several runs.
     nodes = [(i, v) for i in sorted(cands) for v in sorted(cands[i])]
+    chains = []
+    while True:
+        chain = _longest_run(nodes)
+        if len(chain) < 3:
+            break
+        chains.append(chain)
+        used = {i for i, _ in chain}
+        nodes = [(i, v) for i, v in nodes if i not in used]
+    if sum(len(c) for c in chains) < 0.7 * len(cands):
+        return out
+    for chain in chains:
+        if all(v == i + 1 for i, v in chain):
+            continue  # identical to the PDF position: nothing new to say
+        for i, v in chain:
+            out[i] = (str(v), "running header/footer")
+    return out
+
+
+def _longest_run(nodes):
+    """Longest list of (page, number) with rising pages, rising numbers, and number step >= page step."""
     best, prev = {}, {}
     for k, (i, v) in enumerate(nodes):
         best[k], prev[k] = 1, None
@@ -56,15 +77,11 @@ def detect_printed(doc, furniture_text_by_page):
             pi, pv = nodes[m]
             if pi < i and v > pv and (v - pv) >= (i - pi) and best[m] + 1 > best[k]:
                 best[k], prev[k] = best[m] + 1, m
+    if not best:
+        return []
     end = max(best, key=lambda k: (best[k], -nodes[k][1]))
     chain, k = [], end
     while k is not None:
         chain.append(nodes[k])
         k = prev[k]
-    if len(chain) < 3 or len(chain) < 0.7 * len(cands):
-        return out
-    if all(v == i + 1 for i, v in chain):
-        return out  # identical to the PDF position: nothing new to say
-    for i, v in chain:
-        out[i] = (str(v), "running header/footer")
-    return out
+    return chain[::-1]

@@ -381,3 +381,28 @@ def test_24_citation_fragment_in_its_own_block_stays_in_the_paragraph(tmp_path):
     res = extract(one_page(tmp_path, b))
     text = para_text(res.excerpts[0])
     assert "balancing. Id., at 306-307. Second" in text and len(res.excerpts[0].paras) == 1
+
+
+def test_25_printed_numbers_restart_in_each_section(tmp_path):
+    """A syllabus (1-3) followed by an opinion that restarts at 1: each section reads correctly."""
+    d = new_doc()
+    numbers = [1, 2, 3, 1, 2, 3, 4, 5, 6]
+    for i, num in enumerate(numbers):
+        p = d.new_page()
+        frame(p, header=f"Cite as: 603 U. S. (2024) {num}")
+        put(p, 72, 100, [f"{chr(97 + i) * 4} {l}" for l in PARA1])
+    hl(d[1], "written limits")   # section one: printed number equals the PDF position
+    hl(d[5], "written limits")   # section two: PDF page 6 is printed page 3
+    hl(d[8], "written limits")   # PDF page 9 is printed page 6
+    res = extract(save(d, tmp_path / "t.pdf"))
+    assert [(e.pages[0], e.printed) for e in res.excerpts] == [(2, None), (6, ("3", "3")), (9, ("6", "6"))]
+
+
+def test_26_scattered_numbers_are_not_page_numbers(tmp_path):
+    d = new_doc()
+    for i, num in enumerate([57, 3, 912, 40, 7, 1990]):
+        p = d.new_page()
+        frame(p, header=f"Some Review {num}")
+        put(p, 72, 100, [f"{chr(97 + i) * 4} {l}" for l in PARA1])
+    hl(d[2], "written limits")
+    assert extract(save(d, tmp_path / "t.pdf")).excerpts[0].printed is None

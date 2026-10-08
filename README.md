@@ -17,7 +17,8 @@ A 114-page Supreme Court opinion with six highlights was exported in about **one
 
 ![A PDF page with a highlighted passage](docs/input-pdf.png)
 
-**The Word document it creates** (the highlights, their paragraphs, and their pages):
+**The Word document it creates.** The green passage above comes out in the same color, inside its
+paragraph, with its page (PDF page 22 is printed page 14, as the page header shows):
 
 ![The exported Word document](docs/output-word.png)
 
@@ -36,8 +37,9 @@ The first run sets itself up (a minute, internet needed once). After that it wor
 ## What you get
 
 - One Word file per PDF, with each highlighted passage in its paragraph, only the highlighted words
-  emphasized (Word highlight color, or bold), and the PDF page number. A printed page number is
-  added only when the PDF reliably shows one.
+  emphasized (Word highlight color, or bold), and the PDF page number. The printed page number is
+  added when the PDF reliably shows one, including documents whose numbering restarts in each
+  section.
 - Optional single combined file, and a report of anything skipped.
 - A ⚠ **Review** note wherever it is unsure, such as a highlight that cuts a word in half. It never
   guesses silently.
@@ -49,6 +51,7 @@ Options (one paragraph or the ones around it, bold, a combined file) are in `set
 
 - Needs PDFs with real highlight annotations and selectable text. Scans without a text layer are
   reported, not exported.
+- The text comes out plain: italics, fonts, and footnote markers are not carried over.
 - Paragraph boundaries are a best guess from the layout. The highlighted words themselves come
   straight from the PDF, so check important quotations against the original.
 
