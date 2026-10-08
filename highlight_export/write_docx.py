@@ -60,6 +60,10 @@ def _add_runs(par, runs, emphasis):
                 run.font.highlight_color = PALETTE[word_color(r.color)][1]
 
 
+def _n(count, noun):
+    return f"{count} {noun}" + ("" if count == 1 else "s")
+
+
 def add_source(doc, res, emphasis="highlight", heading_page_break=False, name=None):
     """Append one source's heading and excerpts to an open Document."""
     title = res.title or name
@@ -71,8 +75,9 @@ def add_source(doc, res, emphasis="highlight", heading_page_break=False, name=No
     p.add_run(name)
     p = doc.add_paragraph()
     src = f"Title source: {res.title_source}" if res.title_source else "Title: none in the PDF, filename used"
-    p.add_run(f"{src}  ·  {res.found} highlights found, {res.exported} exported with text, "
-              f"{res.no_text} without text  ·  {len(res.excerpts)} excerpts, {res.flagged} to review").italic = True
+    p.add_run(f"{src}  ·  {_n(res.found, 'highlight')} found, {res.exported} exported with text, "
+              f"{res.no_text} without text  ·  {_n(len(res.excerpts), 'excerpt')}, "
+              f"{res.flagged} to review").italic = True
     for note in res.notes:
         q = doc.add_paragraph()
         r = q.add_run(f"Note: {note}")

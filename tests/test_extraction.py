@@ -406,3 +406,20 @@ def test_26_scattered_numbers_are_not_page_numbers(tmp_path):
         put(p, 72, 100, [f"{chr(97 + i) * 4} {l}" for l in PARA1])
     hl(d[2], "written limits")
     assert extract(save(d, tmp_path / "t.pdf")).excerpts[0].printed is None
+
+
+def test_27_footnote_marker_after_the_last_sentence_still_ends_the_paragraph(tmp_path):
+    """"...(1961).3" then a centered heading on the next page: the heading is not part of the paragraph."""
+    d = new_doc()
+    p1 = d.new_page()
+    put(p1, 72, 100, ["Courts decide legal questions by applying their own independent judgment to every",
+                      "dispute that reaches them, and the statute leaves no room for another approach.",
+                      "See Smith v. Jones, 366 U. S. 36, 50 (1961).3"])
+    p2 = d.new_page()
+    p2.insert_text((300, 100), "A", fontsize=11, fontname="helv")
+    put(p2, 72, 130, ["The next section begins here and discusses something else entirely, at length,",
+                      "across several lines of ordinary body text on the second page."], indent=18)
+    hl(d[0], "independent judgment")
+    res = extract(save(d, tmp_path / "t.pdf"))
+    ex = res.excerpts[0]
+    assert para_text(ex).endswith("(1961).3") and ex.flags == []

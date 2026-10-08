@@ -23,8 +23,7 @@ paragraph, with its page (PDF page 22 is printed page 14, as the page header sho
 ![The exported Word document](docs/output-word.png)
 
 The sample is [*Loper Bright Enterprises v. Raimondo*](https://www.supremecourt.gov/opinions/23pdf/22-451_7m58.pdf)
-(2024), the official opinion from supremecourt.gov. It is a U.S. government work in the public
-domain; I only added the highlights. Both files are in `examples/`.
+(2024). Both files are in `examples/`.
 
 ## Get it (Windows)
 
@@ -51,7 +50,8 @@ Options (one paragraph or the ones around it, bold, a combined file) are in `set
 
 - Needs PDFs with real highlight annotations and selectable text. Scans without a text layer are
   reported, not exported.
-- The text comes out plain: italics, fonts, and footnote markers are not carried over.
+- The text comes out plain: italics, fonts, and superscripts are not carried over (a footnote
+  marker appears as an ordinary number after the word).
 - Paragraph boundaries are a best guess from the layout. The highlighted words themselves come
   straight from the PDF, so check important quotations against the original.
 

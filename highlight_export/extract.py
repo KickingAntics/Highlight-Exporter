@@ -17,6 +17,8 @@ HIGHLIGHT, UNDERLINE = 8, 9
 COVER = 0.5  # a character counts as highlighted when more than this share of it is covered
 EDGE_TOUCH = 0.15  # a letter this covered at the edge of a highlight joins it if it continues a word
 TERMINATORS = ".?!:\"”’)]"
+# a sentence end followed by a footnote marker, e.g. "(1961).3"
+ENDS_BEFORE_MARKER = re.compile(r"[.?!:\"”’)\]]\d{1,3}$")
 HYPHENS = "-‐‑"
 SOFT_HYPHEN = "­"
 
@@ -363,7 +365,8 @@ def _is_break(prev, nxt, col_left, col_right, pitch):
     size = max(prev.size, nxt.size)
     if abs(prev.size - nxt.size) > 0.15 * size:
         return True
-    ends = prev.text.rstrip()[-1:] in TERMINATORS if prev.text.strip() else False
+    pt = prev.text.rstrip()
+    ends = bool(pt) and (pt[-1] in TERMINATORS or ENDS_BEFORE_MARKER.search(pt) is not None)
     indented = nxt.bbox[0] - col_left.get((nxt.page, nxt.col), nxt.bbox[0]) > 0.9 * size
     short = prev.bbox[2] < col_right.get((prev.page, prev.col), prev.bbox[2]) - 5 * size
     if prev.col == -1 or nxt.col == -1:

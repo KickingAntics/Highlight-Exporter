@@ -278,3 +278,11 @@ def test_word_files_folder_holds_only_word_files(tmp_path):
         sorted(f for f in top if f.endswith(".docx")) and "Reports" in top
     reports = os.listdir(tmp_path / "out" / "Reports")
     assert any(f.endswith(".txt") for f in reports) and any(f.endswith(".csv") for f in reports)
+
+
+def test_summary_line_uses_singular_for_one(tmp_path):
+    res = extract(make(tmp_path / "a.pdf"))
+    out = tmp_path / "o.docx"
+    write_single(out, res, "a.pdf")
+    line = [p.text for p in Document(out).paragraphs if "found" in p.text and "excerpt" in p.text][0]
+    assert "1 highlight found" in line and "1 excerpt," in line and "highlights found" not in line
